@@ -1,4 +1,4 @@
-import { auth, googleProvider, githubProvider } from "./firebase";
+import { auth, googleProvider } from "./firebase";
 import { signInWithPopup, signOut, signInWithRedirect } from "firebase/auth";
 
 export async function signInWithGoogle() {
@@ -15,27 +15,6 @@ export async function signInWithGoogle() {
       try {
         await signInWithRedirect(auth, googleProvider);
         return null as any; // control will not reach here in redirect flow
-      } catch (redirectErr) {
-        handleAuthError(redirectErr);
-        throw redirectErr;
-      }
-    }
-    handleAuthError(err);
-    throw err;
-  }
-}
-
-export async function signInWithGithub() {
-  try {
-    const res = await signInWithPopup(auth, githubProvider);
-    return res.user;
-  } catch (err: any) {
-    const msg = err?.message || "";
-    if (/cross-?origin|opener|blocked a frame|window\.closed/i.test(msg)) {
-      console.warn("Popup blocked by Cross-Origin-Opener-Policy or similar, falling back to redirect sign-in.");
-      try {
-        await signInWithRedirect(auth, githubProvider);
-        return null as any;
       } catch (redirectErr) {
         handleAuthError(redirectErr);
         throw redirectErr;

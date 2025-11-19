@@ -24,7 +24,6 @@ type AuthContextValue = {
   profile: Profile | null;
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
-  signInWithGithub: () => Promise<void>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<Profile | null>;
   onboardingRequired: boolean;
@@ -111,9 +110,6 @@ export const AuthProviderClient: React.FC<{ children: React.ReactNode }> = ({ ch
   async function handleSignInWithGoogle() {
     await authService.signInWithGoogle();
   }
-  async function handleSignInWithGithub() {
-    await authService.signInWithGithub();
-  }
   async function handleSignOut() {
     await authService.signOutUser();
     setProfile(null);
@@ -126,8 +122,7 @@ export const AuthProviderClient: React.FC<{ children: React.ReactNode }> = ({ ch
         firebaseUser,
         profile,
         loading,
-        signInWithGoogle: handleSignInWithGoogle,
-        signInWithGithub: handleSignInWithGithub,
+  signInWithGoogle: handleSignInWithGoogle,
         signOut: handleSignOut,
         refreshProfile,
         onboardingRequired,
