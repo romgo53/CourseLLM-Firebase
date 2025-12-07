@@ -1,0 +1,6 @@
+fastapi==0.121.3
+uvicorn==0.22.0
+firebase_admin==7.1.0
+dspy==3.0.4
+python-dotenv==1.2.1
+requests==2.32.5
