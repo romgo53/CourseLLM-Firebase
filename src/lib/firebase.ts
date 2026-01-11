@@ -16,16 +16,18 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
-// Enable offline persistence so reads can be served from cache when offline.
-// This is a best-effort call: it will fail in some environments (e.g. Safari private mode)
-// and when multiple tabs conflict. We catch and ignore expected errors.
+// Try to enable IndexedDB persistence to allow offline reads. Failures are expected
+// in some browsers or when multiple tabs conflict; we log and ignore them.
 try {
   enableIndexedDbPersistence(db).catch((err) => {
     // failed-precondition: multiple tabs open, unimplemented: browser not supported
-    console.warn("Could not enable IndexedDB persistence:", err.code || err.message || err);
+    console.warn(
+      "Could not enable IndexedDB persistence:",
+      err.code || err.message || err
+    );
   });
 } catch (e) {
-  // Ignore synchronous errors
+  // Ignore synchronous errors when enabling persistence
   console.warn("Persistence enable failed:", e);
 }
 

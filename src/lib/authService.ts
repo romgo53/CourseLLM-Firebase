@@ -6,12 +6,12 @@ export async function signInWithGoogle() {
     const res = await signInWithPopup(auth, googleProvider);
     return res.user;
   } catch (err: any) {
-    // Some browser environments (strict COOP/COEP, embedded contexts) block cross-window access
-    // which the Firebase popup flow relies on (checking popup.closed). In that case, fall back
-    // to the redirect-based flow which does not require cross-window communication.
+    // Fallback to redirect when popup-based sign-in is blocked by the browser.
     const msg = err?.message || "";
     if (/cross-?origin|opener|blocked a frame|window\.closed/i.test(msg)) {
-      console.warn("Popup blocked by Cross-Origin-Opener-Policy or similar, falling back to redirect sign-in.");
+      console.warn(
+        "Popup blocked by Cross-Origin-Opener-Policy or similar, falling back to redirect sign-in."
+      );
       try {
         await signInWithRedirect(auth, googleProvider);
         return null as any; // control will not reach here in redirect flow
@@ -31,7 +31,7 @@ export async function signOutUser() {
 
 export function handleAuthError(err: any) {
   if (!err) return;
-  // Basic cases - the UI can show friendlier messages
+  // Common cases the UI may want to handle differently
   if (err.code === "auth/popup-closed-by-user") {
     console.warn("Auth popup closed by user");
     return;
@@ -40,10 +40,12 @@ export function handleAuthError(err: any) {
     console.warn("Network error");
     return;
   }
-  // Cross-origin opener / popup blocking issues
+  // Popup blocking / COOP/COEP issues
   const msg = err?.message || "";
   if (/cross-?origin|opener|blocked a frame|window\.closed/i.test(msg)) {
-    console.warn("Popup-based sign-in blocked by browser COOP/COEP or embedding policy. Try enabling third-party cookies or use redirect-based sign-in.");
+    console.warn(
+      "Popup-based sign-in blocked by browser COOP/COEP or embedding policy. Try enabling third-party cookies or use redirect-based sign-in."
+    );
     return;
   }
   console.error("Auth error", err);
