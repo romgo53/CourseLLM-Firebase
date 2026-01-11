@@ -1,6 +1,6 @@
 # fetch files from file store 
 from typing import List, Dict
-from file_store_client import FileStoreClient
+# from file_store_client import FileStoreClient
 
 def fetch_markdown_files(file_ids: List[str]) -> Dict[str, str]:
     """
@@ -11,11 +11,12 @@ def fetch_markdown_files(file_ids: List[str]) -> Dict[str, str]:
     Returns:
         Dict[str, str]: A dictionary mapping file IDs to their text content.
     """ 
-    client = FileStoreClient()
+    # client = FileStoreClient()
+    client = None  # Placeholder for the actual file store client
     files_content = {}
     for file_id in file_ids:
         try:
-            content = client.get_file_content(file_id)
+            content = client
             files_content[file_id] = content
         except Exception as e:
             print(f"Error fetching file {file_id}: {e}")
