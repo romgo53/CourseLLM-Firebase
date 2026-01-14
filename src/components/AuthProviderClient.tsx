@@ -69,24 +69,19 @@ export const AuthProviderClient: React.FC<{ children: React.ReactNode }> = ({ ch
       }
 
       const data = snap.data() as Profile;
-      // Determine completeness
       const isComplete = isProfileComplete(data);
       setProfile({ ...data } as Profile);
       setOnboardingRequired(!isComplete);
       return data;
     } catch (err: any) {
-      // Firestore offline error (client is offline) or other transient network errors.
-      // In this case, avoid forcing onboarding redirect. Leave profile null and
-      // onboardingRequired false so UI can show an offline retry state instead of
-      // redirecting the user to onboarding.
+      // If Firestore is unavailable (offline or transient), don't force onboarding.
       const msg = err?.message || err?.code || "";
       if (msg.toString().toLowerCase().includes("client is offline") || err?.code === 'unavailable' || err?.code === 'failed-precondition') {
         console.warn("Firestore unavailable (offline?) - will not force onboarding:", err);
         setProfile(null);
         setOnboardingRequired(false);
-          return null;
+        return null;
       }
-      // Re-throw unexpected errors so they can be observed
       throw err;
     }
   }
