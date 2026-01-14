@@ -2,8 +2,7 @@
 
 import React, { useState } from "react"
 import { useAuth } from "@/components/AuthProviderClient"
-import { doc, setDoc, serverTimestamp } from "firebase/firestore"
-import { db } from "@/lib/firebase"
+import { auth } from "@/lib/firebase"
 import { useRouter } from "next/navigation"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -45,35 +44,51 @@ function OnboardingContent() {
     }
     setSaving(true)
     try {
-      const userDoc = doc(db, "users", firebaseUser.uid)
-      await setDoc(
-        userDoc,
-        {
-          uid: firebaseUser.uid,
-          email: firebaseUser.email,
-          displayName: firebaseUser.displayName,
-          photoURL: firebaseUser.photoURL,
-          role,
-          department,
-          courses,
-          authProviders: firebaseUser.providerData?.map((p) => p.providerId.replace(/\.com$/, "")) || [],
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-          profileComplete: true,
+      const user = auth.currentUser
+      if (!user) throw new Error("Not authenticated")
+
+      // Get a fresh token to authenticate the POST request to our server route
+      const idToken = await user.getIdToken(/* forceRefresh= */ false)
+
+      const body = {
+        role,
+        department,
+        courses,
+        displayName: firebaseUser.displayName,
+        photoURL: firebaseUser.photoURL,
+      }
+
+      const res = await fetch('/api/onboarding', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`,
         },
-        { merge: true }
-      )
+        body: JSON.stringify(body),
+      })
+
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}))
+        throw new Error(json?.error || `onboarding failed: ${res.status}`)
+      }
+
+      // Refresh client token to pick up custom claims set by the server
+      try {
+        await user.getIdToken(true)
+      } catch (e) {
+        console.warn('Failed to refresh token after onboarding:', e)
+      }
 
       try {
         await refreshProfile()
       } catch (e) {
-        console.warn("refreshProfile failed after onboarding save:", e)
+        console.warn('refreshProfile failed after onboarding save:', e)
       }
 
-      router.replace(role === "student" ? "/student" : "/teacher")
+      router.replace(role === 'student' ? '/student' : '/teacher')
     } catch (err) {
-      console.error("Failed saving profile:", err)
-      alert("Failed to save profile. Try again.")
+      console.error('Failed saving profile:', err)
+      alert('Failed to save profile. Try again.')
     } finally {
       setSaving(false)
     }
