@@ -55,6 +55,7 @@ dataconnect/.dataconnect
 src/dataconnect-generated/
 src/dataconnect-admin-generated/
 
+# Python 
 venv/
 test-files/
 __pycache__/
