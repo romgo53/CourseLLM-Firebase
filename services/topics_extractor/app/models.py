@@ -2,11 +2,9 @@ from pydantic import BaseModel
 
 class TopicMetadata(BaseModel):
     """Model representing metadata for a topic."""
-
     source_files: list[str] | None = None
     confidence_score: float | None = None
     source_sections: list[str] | None = None
-    summary: str | None = None
 
 class Topic(BaseModel):
     """Model representing a topic."""
