@@ -1,0 +1,164 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Topic Tree</title>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    .node circle { fill: #fff; stroke: steelblue; stroke-width: 2px; }
+    .node text { font: 12px sans-serif; }
+    .link { fill: none; stroke: #ccc; stroke-width: 2px; }
+    .tooltip {
+      position: absolute;
+      pointer-events: none;
+      background: rgba(0,0,0,0.8);
+      color: #fff;
+      padding: 8px;
+      border-radius: 4px;
+      max-width: 360px;
+      font-size: 13px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      display: none;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <h2>Topic Tree</h2>
+  <div id="chart"></div>
+  <div id="tooltip" class="tooltip"></div>
+
+  <!-- D3 v7 -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script>
+  const data = {"topic": {"name": "Advanced Problem-Solving Techniques", "description": "An overview of sophisticated methods for solving complex problems, focusing on self-referential solutions and optimization strategies.", "metadata": {"source_files": [], "confidence_score": 0.95, "source_sections": ["Advanced Problem-Solving Techniques"]}}, "subtopics": [{"topic": {"name": "Self-Referential Solutions (Recursion)", "description": "A problem-solving approach involving breaking down a problem into smaller instances of the same problem. It defines solutions where a procedure references itself during execution, comprising a termination condition (base case), a reduction step, and combination logic.", "metadata": {"source_files": [], "confidence_score": 0.98, "source_sections": ["Self-Referential Solutions", "Understanding the Concept", "Key Components"]}}, "subtopics": [{"topic": {"name": "Recursive Algorithm Components", "description": "Detailed description of the essential parts of any self-referential solution: the termination condition (base case) which prevents infinite execution, the reduction step that simplifies the problem towards the base case, and the combination logic to build the final solution from sub-solutions.", "metadata": {"source_files": [], "confidence_score": 0.92, "source_sections": ["Key Components", "Termination Condition (Base Case)", "Reduction Step", "Combination Logic"]}}, "subtopics": null}, {"topic": {"name": "Recursive Design Principles and Pitfalls", "description": "Guidelines for effectively using self-referential solutions, including ideal scenarios (optimal substructure, overlapping subproblems), common errors to avoid (missing base cases, incorrect progression, wrong combination logic), and best practices for implementation and testing.", "metadata": {"source_files": [], "confidence_score": 0.94, "source_sections": ["When to Use Self-Referential Solutions", "Common Pitfalls", "Best Practices"]}}, "subtopics": null}, {"topic": {"name": "Classic Recursive Examples", "description": "Illustrative examples demonstrating the application of self-referential solutions to common problems.", "metadata": null}, "subtopics": [{"topic": {"name": "Factorial Calculation (Recursive Example)", "description": "A classic example of a self-referential solution, defining n! as n multiplied by (n-1)! with base cases 0!=1 and 1!=1. Includes an execution trace and complexity analysis.", "metadata": {"source_files": [], "confidence_score": 0.9, "source_sections": ["Classic Examples", "Computing Factorials"]}}, "subtopics": null}, {"topic": {"name": "Fibonacci Sequence (Recursive Example)", "description": "Another classic self-referential example where each number is the sum of the two preceding ones, with base cases F(0)=0 and F(1)=1. Highlights the problem of redundant computations in its naive recursive implementation.", "metadata": {"source_files": [], "confidence_score": 0.9, "source_sections": ["Classic Examples", "Fibonacci Sequence"]}}, "subtopics": null}, {"topic": {"name": "Euclidean Algorithm (Greatest Common Divisor)", "description": "An advanced example of an efficient recursive algorithm for computing the greatest common divisor of two numbers. It demonstrates how a simple recursive definition can lead to a highly optimized solution with O(log min(a,b)) complexity.", "metadata": {"source_files": [], "confidence_score": 0.91, "source_sections": ["Advanced Example: Greatest Common Divisor (GCD)", "Euclidean Algorithm"]}}, "subtopics": null}]}, {"topic": {"name": "Recursion Analysis and Optimization", "description": "Topics related to evaluating the performance and improving the efficiency of recursive algorithms.", "metadata": null}, "subtopics": [{"topic": {"name": "Complexity Analysis of Recursive Algorithms", "description": "Evaluation of the time and space efficiency of recursive solutions. It covers how to determine the time complexity (e.g., O(n) for factorial, O(2^n) for naive Fibonacci) and space complexity (O(n) for call stack depth).", "metadata": {"source_files": [], "confidence_score": 0.93, "source_sections": ["Complexity Analysis", "Time Complexity", "Space Complexity"]}}, "subtopics": null}, {"topic": {"name": "Redundant Computation Problem", "description": "The issue in recursive solutions, particularly those with multiple branches (like the naive Fibonacci), where the same subproblems are solved repeatedly, leading to exponential time complexity.", "metadata": {"source_files": [], "confidence_score": 0.92, "source_sections": ["The Redundant Computation Problem"]}}, "subtopics": null}, {"topic": {"name": "Memoization (Optimization Strategy)", "description": "An optimization technique to improve the efficiency of recursive algorithms by storing the results of expensive function calls and returning the cached result when the same inputs occur again. This prevents redundant computations and transforms exponential time complexity into polynomial.", "metadata": {"source_files": [], "confidence_score": 0.98, "source_sections": ["Optimization Strategy: Remembering Past Results", "The Core Idea", "Implementation Approach", "Memoized Fibonacci", "Complexity with Memoization"]}}, "subtopics": null}]}]}, {"topic": {"name": "Iterative Solutions (Bottom-Up Approach)", "description": "An alternative method to solve problems typically addressed with recursion, by building solutions from the smallest subproblems upwards. Often provides better space optimization (e.g., O(1) for Fibonacci) and avoids call stack overhead compared to top-down recursion.", "metadata": {"source_files": [], "confidence_score": 0.9, "source_sections": ["Alternative: Bottom-Up Approach", "Iterative Fibonacci"]}}, "subtopics": null}]};
+
+  const tooltip = d3.select('#tooltip');
+
+  const width = Math.max(1000, window.innerWidth - 40);
+  const dx = 40; // vertical spacing between nodes
+  const dy = 320; // horizontal spacing between levels
+  const initialHeight = 900;
+  const tree = d3.tree().nodeSize([dx, dy]);
+
+  const root = d3.hierarchy(data, d => d.subtopics);
+  root.x0 = dy / 2;
+  root.y0 = 0;
+
+  // collapse all children initially except root's immediate children
+  root.children && root.children.forEach(collapse);
+
+  const svg = d3.select('#chart').append('svg')
+    .attr('width', width)
+    .attr('height', initialHeight)
+    .attr('viewBox', [-40, -20, width, initialHeight])
+    .style('font', '14px sans-serif')
+    .style('user-select', 'none');
+
+  // Add zoomable group
+  const container = svg.append('g').attr('class', 'container');
+  const gLink = container.append('g').attr('fill', 'none').attr('stroke', '#555');
+  const gNode = container.append('g').attr('cursor', 'pointer');
+
+  const zoom = d3.zoom().scaleExtent([0.25, 3]).on('zoom', (event) => {
+    container.attr('transform', event.transform);
+  });
+  svg.call(zoom);
+
+  // compute layout once and set initial center
+  tree(root);
+  // center vertically on root
+  const minX = d3.min(root.descendants(), d => d.x);
+  const maxX = d3.max(root.descendants(), d => d.x);
+  const centerY = (minX + maxX) / 2 || 0;
+  // initial translate so tree is centered vertically and shifted right a bit
+  const initialTransform = d3.zoomIdentity.translate(120, (initialHeight / 2) - centerY).scale(1);
+  svg.call(zoom.transform, initialTransform);
+
+  update(root);
+
+  function update(source) {
+    const duration = 250;
+    const nodes = root.descendants().reverse();
+    const links = root.links();
+
+    tree(root);
+
+    let height = Math.max(initialHeight, root.leaves().length * dx * 1.5 + 200);
+    svg.transition().duration(duration).attr('height', height);
+
+    // Links
+    const link = gLink.selectAll('path').data(links, d => d.target.data.topic.name + '_' + (d.target.data.topic.metadata?.confidence_score || ''));
+    link.enter().append('path')
+      .attr('class', 'link')
+      .attr('d', d3.linkHorizontal().x(d => d.y).y(d => d.x));
+    link.exit().remove();
+
+    // Nodes
+    const node = gNode.selectAll('g.node').data(nodes, d => d.data.topic.name + '_' + (d.data.topic.metadata?.confidence_score || ''));
+    const nodeEnter = node.enter().append('g')
+      .attr('class', 'node')
+      .attr('transform', d => `translate(${d.y},${d.x})`)
+      .on('click', (event, d) => {
+        // toggle children in a robust way
+        if (d.children) {
+          d._children = d.children;
+          d.children = null;
+        } else {
+          d.children = d._children;
+          d._children = null;
+        }
+        update(d);
+      })
+      .on('mouseover', (event, d) => showTooltip(event, d))
+      .on('mousemove', (event, d) => moveTooltip(event))
+      .on('mouseout', hideTooltip);
+
+    nodeEnter.append('circle').attr('r', 10).attr('fill', d => d._children ? '#2b6cb0' : '#3182ce');
+    nodeEnter.append('text')
+      .attr('dy', '0.31em')
+      .attr('x', d => d._children ? -16 : 16)
+      .attr('text-anchor', d => d._children ? 'end' : 'start')
+      .text(d => d.data.topic.name)
+      .style('font-size', '15px')
+      .clone(true).lower()
+      .attr('stroke', 'white');
+
+    node.exit().remove();
+  }
+
+  function collapse(d) {
+    if (d.children) {
+      d._children = d.children;
+      d._children.forEach(collapse);
+      d.children = null;
+    }
+  }
+
+  function showTooltip(event, d) {
+    const desc = d.data.topic.description || '';
+    const conf = d.data.topic.metadata?.confidence_score;
+    const source_sections = d.data.topic.metadata?.source_sections || [];
+    let html = '';
+    if (desc) html += `<div><strong>Description</strong><div>${escapeHtml(desc)}</div></div>`;
+    if (conf !== undefined) html += `<div style="margin-top:6px"><strong>Confidence</strong>: ${conf}</div>`;
+    if (source_sections && source_sections.length) html += `<div style="margin-top:6px"><strong>Sections</strong>: ${escapeHtml(source_sections.join(', '))}</div>`;
+    tooltip.html(html).style('display', 'block');
+    moveTooltip(event);
+  }
+
+  function moveTooltip(event) {
+    const [mx, my] = d3.pointer(event);
+    tooltip.style('left', (mx + 20) + 'px').style('top', (my + 20) + 'px');
+  }
+
+  function hideTooltip() { tooltip.style('display', 'none'); }
+
+  // escape small subset of HTML
+  function escapeHtml(str) {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');
+  }
+  </script>
+</body>
+</html>

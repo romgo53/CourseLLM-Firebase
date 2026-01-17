@@ -1,0 +1,148 @@
+{
+  "topics": [
+    {
+      "name": "Advanced Problem-Solving Techniques",
+      "description": "Comprehensive methods and strategies for tackling complex computational challenges, including self-referential approaches and optimization techniques.",
+      "metadata": {
+        "source_files": [
+          "None"
+        ],
+        "confidence_score": 0.95,
+        "source_sections": null
+      }
+    },
+    {
+      "name": "Self-Referential Solutions",
+      "description": "A powerful problem-solving approach that involves breaking down a problem into smaller instances of the same problem, typically implemented through recursion.",
+      "metadata": {
+        "source_files": [
+          "None"
+        ],
+        "confidence_score": 0.95,
+        "source_sections": null
+      }
+    },
+    {
+      "name": "Recursive Problem Components",
+      "description": "The essential elements required for a functional self-referential (recursive) solution, including a termination condition (base case), a reduction step, and combination logic.",
+      "metadata": {
+        "source_files": [
+          "None"
+        ],
+        "confidence_score": 0.95,
+        "source_sections": null
+      }
+    },
+    {
+      "name": "Base Case (Recursion)",
+      "description": "The simplest solvable instance of a recursive problem that serves as a stopping condition to prevent infinite loops.",
+      "metadata": {
+        "source_files": [
+          "None"
+        ],
+        "confidence_score": 0.95,
+        "source_sections": null
+      }
+    },
+    {
+      "name": "Complexity Analysis of Recursive Algorithms",
+      "description": "The evaluation of computational resources, such as time and memory (call stack depth), required by self-referential (recursive) algorithms, distinguishing between efficient and inefficient implementations.",
+      "metadata": {
+        "source_files": [
+          "None"
+        ],
+        "confidence_score": 0.95,
+        "source_sections": null
+      }
+    },
+    {
+      "name": "Redundant Computations",
+      "description": "A common inefficiency in self-referential algorithms where the same subproblems are repeatedly solved, leading to significantly increased time complexity.",
+      "metadata": {
+        "source_files": [
+          "None"
+        ],
+        "confidence_score": 0.95,
+        "source_sections": null
+      }
+    },
+    {
+      "name": "Memoization",
+      "description": "An optimization technique used in self-referential solutions to speed up computations by storing the results of expensive function calls and returning the cached result when the same inputs occur again, thereby avoiding redundant computations.",
+      "metadata": {
+        "source_files": [
+          "None"
+        ],
+        "confidence_score": 0.95,
+        "source_sections": null
+      }
+    },
+    {
+      "name": "Fibonacci Sequence Optimization",
+      "description": "Strategies to improve the efficiency of computing the Fibonacci sequence, particularly through memoization or iterative bottom-up approaches, to mitigate the problem of redundant calculations.",
+      "metadata": {
+        "source_files": [
+          "None"
+        ],
+        "confidence_score": 0.95,
+        "source_sections": null
+      }
+    },
+    {
+      "name": "Optimal Substructure",
+      "description": "A property of a problem where an optimal solution can be constructed from optimal solutions of its subproblems, indicating suitability for self-referential or dynamic programming methods.",
+      "metadata": {
+        "source_files": [
+          "None"
+        ],
+        "confidence_score": 0.95,
+        "source_sections": null
+      }
+    },
+    {
+      "name": "Overlapping Subproblems",
+      "description": "A characteristic of problems where recursive solutions repeatedly encounter and solve the same subproblems, making techniques like memoization highly effective for performance improvement.",
+      "metadata": {
+        "source_files": [
+          "None"
+        ],
+        "confidence_score": 0.95,
+        "source_sections": null
+      }
+    },
+    {
+      "name": "Bottom-Up Dynamic Programming",
+      "description": "An iterative approach to dynamic programming where solutions to smaller subproblems are computed first and stored, then used to build solutions for larger problems, typically avoiding recursion stack overhead.",
+      "metadata": {
+        "source_files": [
+          "None"
+        ],
+        "confidence_score": 0.95,
+        "source_sections": null
+      }
+    },
+    {
+      "name": "Greatest Common Divisor (GCD)",
+      "description": "A mathematical concept representing the largest positive integer that divides two or more integers without leaving a remainder, often calculated efficiently using the self-referential Euclidean Algorithm.",
+      "metadata": {
+        "source_files": [
+          "None"
+        ],
+        "confidence_score": 0.95,
+        "source_sections": null
+      }
+    },
+    {
+      "name": "Euclidean Algorithm",
+      "description": "An efficient self-referential algorithm for computing the greatest common divisor of two integers, based on repeatedly applying the division algorithm until the remainder is zero.",
+      "metadata": {
+        "source_files": [
+          "None"
+        ],
+        "confidence_score": 0.95,
+        "source_sections": null
+      }
+    }
+  ],
+  "file_count": 1
+}

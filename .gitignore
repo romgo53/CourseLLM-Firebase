@@ -40,10 +40,11 @@ yarn-error.log*
 next-env.d.ts
 
 .genkit/*
-.env
+
 .env.local
 .env.*.local
-.env*
+.env
+
 !.env.local.example
 
 # firebase
@@ -54,3 +55,8 @@ firestore-debug.log
 dataconnect/.dataconnect
 src/dataconnect-generated/
 src/dataconnect-admin-generated/
+
+# Python 
+venv/
+test-files/
+__pycache__/
