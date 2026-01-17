@@ -1,11 +1,20 @@
-import re
-from typing import Optional
-from dspy_modules import (TopicExtractor, MaterialToTopicMatcher, List, Dict, dspy, Topic, TopicTreeGenerator, TopicTree, UpdateTopicTree, TopicMetadata)
+from typing import Optional, List
 import os
-from settings import Settings
+import dspy
+from app.dspy_modules import (
+    TopicExtractor,
+    MaterialToTopicMatcher,
+    TopicTreeGenerator,
+    Topic,
+    TopicTree,
+    UpdateTopicTree,
+    TopicMetadata,
+)
+from app.settings import Settings
 
 settings = Settings()
 
+# Configure the DSpy language model
 lm = dspy.LM(settings.lm_model, api_key=settings.lm_api_key)
 dspy.configure(lm=lm)
 
@@ -25,6 +34,6 @@ def update_topic_tree(existing_tree: TopicTree, new_topics: List[Topic]) -> Topi
     return topic_updater(existing_topic_tree=existing_tree, new_topics=new_topics).get("updated_topic_tree")
 
 
-def match_topics_to_material(text: str, topics: List[Topic]) -> List[Topic] | None:
+def match_topics_to_material(text: str, topics: List[Topic]) -> list[Topic] | None:
     topic_matcher = dspy.Predict(MaterialToTopicMatcher)
     return topic_matcher(material=text, topics=topics).get("matched_topics")

@@ -3,13 +3,19 @@ import os
 from pydantic import Field
 from pydantic_settings import BaseSettings,SettingsConfigDict
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env.example")
+    model_config = SettingsConfigDict(env_file=".env.local", extra='ignore')
 
     port: int = Field(default=8000, alias="PORT")
+    env: str = Field(default="development", alias="ENV")
     log_level: str = Field(default="info", alias="LOG_LEVEL")
     lm_model: str = Field(default="gemini/gemini-2.5-flash", alias="LM_MODEL")
     lm_api_key: str = Field(default="", alias="LM_API_KEY")
     firebase_service_account: dict = Field(default={}, alias="FIREBASE_SERVICE_ACCOUNT_JSON")
     test_auth_token: str = Field(default="", alias="TEST_AUTH_TOKEN")
+    test_user_uid: str = Field(default="", alias="TEST_USER_UID")
+    use_emulator: str = Field(default="false", alias="USE_EMULATOR")
+    use_sentry: str = Field(default="false", alias="USE_SENTRY")
+    use_sentry_dsn: str = Field(default="", alias="SENTRY_DSN")
+
 
  

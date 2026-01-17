@@ -1,6 +1,6 @@
 import dspy
 from typing import List, Dict
-from models import Topic, TopicTree, TopicMetadata
+from app.models import Topic, TopicTree, TopicMetadata
 
 
 class TopicExtractor(dspy.Signature):
@@ -8,7 +8,7 @@ class TopicExtractor(dspy.Signature):
     return a list of the topics according to the Topic model with the topic input.
       make sure to avoid duplicates and keep the most relevant ones.
       meaning, if a topic or a similar one already exists in the topics_input, don't add it again.
-      return only new topics that are not in the topics_input.
+      return only new topics(the delta) that are not in the topics_input.
       """
 
     topics_input: List[Topic] | None = dspy.InputField(desc="A list of topics that we've extracted so far.")

@@ -17,17 +17,30 @@ export default function AuthRedirector() {
 
     // If onboarding required, navigate to onboarding when on neutral pages (root/login)
     if (onboardingRequired) {
-      if (pathname === '/' || pathname === '/login' || pathname === '') {
+      if (pathname !== '/onboarding') {
         router.replace('/onboarding');
       }
       return;
     }
 
-    // If profile exists and we're on neutral pages, go to dashboard
+    // If profile exists, enforce role-based dashboard access
     if (profile && profile.role) {
-      const target = profile.role === 'teacher' ? '/teacher' : '/student';
+      const allowed = profile.role === 'teacher' ? '/teacher' : '/student';
+
+      // Redirect neutral entry points to the allowed dashboard
       if (pathname === '/' || pathname === '/login' || pathname === '') {
-        router.replace(target);
+        router.replace(allowed);
+        return;
+      }
+
+      // Block access to the other dashboard's routes
+      if (pathname.startsWith('/teacher') && allowed !== '/teacher') {
+        router.replace(allowed);
+        return;
+      }
+      if (pathname.startsWith('/student') && allowed !== '/student') {
+        router.replace(allowed);
+        return;
       }
     }
   }, [loading, firebaseUser, profile, onboardingRequired, pathname, router]);

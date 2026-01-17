@@ -4,6 +4,12 @@ import { setUserRole } from "@/lib/auth-admin";
 
 // Ensure admin is initialized if not already (auth-admin initializes when imported,
 // but double-checking here is harmless)
+
+if (process.env.NODE_ENV === "development") {
+  process.env.FIREBASE_AUTH_EMULATOR_HOST = "127.0.0.1:9099";
+  process.env.FIRESTORE_EMULATOR_HOST = "127.0.0.1:8080";
+  process.env.FIREBASE_STORAGE_EMULATOR_HOST = "127.0.0.1:9199";
+}
 if (!admin.apps.length) {
   const json = process.env.FIREBASE_SERVICE_ACCOUNT_JSON || "{}";
   try {

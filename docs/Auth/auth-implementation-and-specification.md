@@ -2,6 +2,15 @@
 
 This document summarizes the authentication and login implementation in this repository, lists the client/server APIs we added, and documents how to run tests that exercise auth flows.
 
+## Specefication:
+
+The application uses Firebase Authentication as the identity provider, enabling users to sign in using Google OAuth. Upon first login, users are directed to an onboarding page to complete their profile, including role selection (student or teacher). The application enforces role-based access control by redirecting users to appropriate dashboards based on their assigned roles. Authentication state is managed via a React context provider, ensuring that user information and profile data are accessible throughout the app. For micro-services, Firebase ID tokens are verified using the Firebase Admin SDK to enforce authorization based on custom claims.
+
+To verify this feature a simple E2E test suite using Playwright has been implemented, covering scenarios such as first-time login and onboarding, role-based access control, and logout functionality.
+Or manual testing can be done using the Firebase Authentication emulator or custom tokens, login as either a student or teacher and verify the correct redirections and access controls.
+
+---
+
 Files and locations
 
 - Firebase init & providers: `src/lib/firebase.ts`

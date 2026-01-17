@@ -3,19 +3,25 @@ from typing import Optional, Literal
 from firebase_admin import credentials, auth 
 import firebase_admin
 
-from settings import Settings
+from app.settings import Settings
 
 settings = Settings()
 
 def initialize_firebase_admin():
-     cred = credentials.Certificate(settings.firebase_service_account) 
-     firebase_admin.initialize_app(cred)
+     if settings.use_emulator.lower() == "true":
+         # Initialize Firebase Admin SDK to connect to the emulator
+         firebase_admin.initialize_app(options={
+                'projectId': 'course-llm-firebase'  # Use a dummy project ID for the emulator
+         })
+     else:
+         cred = credentials.Certificate(settings.firebase_service_account) 
+         firebase_admin.initialize_app(cred)
 
 def verify_token(id_token: str) -> Optional[str]:
     try:
         if id_token == settings.test_auth_token and settings.test_auth_token != "":
             # For testing purposes, return a dummy UID
-            return "mWoZ0DurppZXg5yY5HUui4RnQfT2"
+            return settings.test_user_uid
         decoded_token = auth.verify_id_token(id_token)
         uid = decoded_token['uid']
         return uid
@@ -24,7 +30,6 @@ def verify_token(id_token: str) -> Optional[str]:
         return None
 
 def get_user_role(id_token: str) -> Optional[Literal['student', 'teacher']]:
-    print("Verifying token in auth.py:", id_token)
     uid = verify_token(id_token)
     if not uid:
         return None
